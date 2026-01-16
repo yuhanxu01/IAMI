@@ -1,0 +1,72 @@
+{
+  "_meta": {
+    "description": "社会身份认同 - 基于 Tajfel & Turner 社会认同理论",
+    "reference": "Social Identity Theory (Tajfel & Turner, 1979)",
+    "last_updated": null,
+    "version": 1
+  },
+  "identity_layers": {
+    "personal_identity": {
+      "self_concept": null,
+      "core_self_descriptions": [],
+      "unique_traits": []
+    },
+    "social_identities": {
+      "_description": "基于群体成员身份的认同",
+      "primary_identities": [],
+      "secondary_identities": [],
+      "identity_salience_hierarchy": []
+    }
+  },
+  "group_memberships": {
+    "ascribed_groups": {
+      "_description": "先赋性群体（出生决定）",
+      "nationality": null,
+      "ethnicity": null,
+      "gender": null,
+      "generation": null,
+      "family_origin": null
+    },
+    "achieved_groups": {
+      "_description": "后致性群体（个人努力/选择）",
+      "profession_industry": null,
+      "education_level": null,
+      "organization_memberships": [],
+      "interest_communities": [],
+      "belief_groups": []
+    }
+  },
+  "in_group_out_group": {
+    "strong_in_groups": {
+      "_description": "强烈认同的群体",
+      "groups": [],
+      "attachment_reasons": []
+    },
+    "out_groups": {
+      "_description": "感到疏离或对立的群体",
+      "groups": [],
+      "reasons": []
+    },
+    "intergroup_attitudes": {
+      "tolerance_level": null,
+      "prejudices_aware_of": [],
+      "stereotypes_held": []
+    }
+  },
+  "identity_conflicts": {
+    "between_identities": [],
+    "identity_vs_environment": [],
+    "identity_threats_experienced": []
+  },
+  "identity_evolution": {
+    "past_identities": [],
+    "current_identity_questions": [],
+    "identity_goals": []
+  },
+  "self_categorization": {
+    "how_i_categorize_myself": [],
+    "how_others_categorize_me": [],
+    "discrepancies": []
+  },
+  "evidence_log": []
+}

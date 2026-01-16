@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "description": "人际关系网络索引 - 基于社会网络分析(SNA)和关系亲密度理论",
+    "frameworks": [
+      "Social Network Analysis (Moreno, Freeman)",
+      "Relationship Closeness Inventory (Berscheid et al.)",
+      "Social Capital Theory (Bourdieu, Putnam)",
+      "Social Identity Theory (Tajfel & Turner)"
+    ],
+    "last_updated": null
+  },
+  "network_overview": {
+    "total_contacts": 0,
+    "by_category": {
+      "family": [],
+      "friends": [],
+      "colleagues": [],
+      "mentors": [],
+      "subordinates": [],
+      "acquaintances": [],
+      "others": []
+    },
+    "key_relationships": [],
+    "social_capital_estimate": {
+      "network_size": null,
+      "network_diversity": null,
+      "strong_ties_count": null,
+      "weak_ties_count": null
+    }
+  },
+  "relationship_files": [],
+  "group_memberships": {
+    "_description": "用户所属的群体和社会身份",
+    "primary_groups": [],
+    "secondary_groups": [],
+    "reference_groups": []
+  },
+  "social_roles": {
+    "_description": "用户在不同关系中扮演的角色",
+    "roles": []
+  }
+}

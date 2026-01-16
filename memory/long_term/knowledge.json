@@ -1,0 +1,26 @@
+{
+  "expertise_areas": [],
+  "professional_background": {
+    "field": null,
+    "experience_years": null,
+    "specializations": []
+  },
+  "interests": {
+    "deep_interests": [],
+    "casual_interests": [],
+    "past_interests": []
+  },
+  "knowledge_depth": {},
+  "learning_style": {
+    "preferred_format": null,
+    "pace": null,
+    "methods": []
+  },
+  "information_sources": [],
+  "skills": {
+    "technical": [],
+    "soft": [],
+    "creative": []
+  },
+  "last_updated": null
+}

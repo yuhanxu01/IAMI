@@ -1,0 +1,21 @@
+{
+  "description": "思想快照时间轴 - 记录价值观、观点、态度随时间的变化",
+  "snapshots": [],
+  "schema": {
+    "snapshot": {
+      "id": "uuid",
+      "timestamp": "ISO 8601 格式",
+      "trigger": "什么触发了这次记录（定期/重大事件/观点变化）",
+      "period_label": "时期标签，如'2024年初'",
+      "state": {
+        "values_snapshot": "当时的核心价值观",
+        "beliefs_snapshot": "当时的主要信念",
+        "concerns": "当时关心的事",
+        "mood_baseline": "基础情绪状态",
+        "life_context": "生活背景（工作、关系等）"
+      },
+      "notable_changes": "与上一个快照相比的显著变化",
+      "evidence": ["支持这些判断的对话引用"]
+    }
+  }
+}

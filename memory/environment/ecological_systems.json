@@ -1,0 +1,131 @@
+{
+  "_meta": {
+    "description": "生态系统记录 - 基于 Bronfenbrenner 生态系统理论",
+    "reference": "Bronfenbrenner, U. (1979). The Ecology of Human Development",
+    "framework": "微系统-中系统-外系统-宏系统-时间系统",
+    "last_updated": null,
+    "version": 1
+  },
+  "microsystem": {
+    "_description": "个人直接互动的环境：家庭、工作、朋友圈",
+    "family": {
+      "structure": null,
+      "dynamics": null,
+      "role_in_family": null,
+      "family_atmosphere": null,
+      "key_relationships": []
+    },
+    "work_school": {
+      "type": null,
+      "position_role": null,
+      "work_environment": null,
+      "satisfaction_level": null,
+      "key_relationships": []
+    },
+    "friend_circles": {
+      "main_circles": [],
+      "social_activities": [],
+      "friendship_quality": null
+    },
+    "living_situation": {
+      "location": null,
+      "type": null,
+      "with_whom": [],
+      "satisfaction": null
+    },
+    "daily_routines": {
+      "typical_day": null,
+      "regular_activities": []
+    }
+  },
+  "mesosystem": {
+    "_description": "微系统之间的相互作用",
+    "work_family_balance": {
+      "current_state": null,
+      "conflicts": [],
+      "synergies": []
+    },
+    "friend_family_overlap": {
+      "description": null
+    },
+    "cross_context_consistency": {
+      "description": "在不同环境中表现是否一致",
+      "observations": []
+    }
+  },
+  "exosystem": {
+    "_description": "间接影响的环境：配偶工作、社区、媒体",
+    "partner_work": {
+      "impact_on_user": null
+    },
+    "community": {
+      "type": null,
+      "involvement_level": null,
+      "resources_available": []
+    },
+    "media_consumption": {
+      "main_sources": [],
+      "influence_assessment": null
+    },
+    "extended_network": {
+      "description": "朋友的朋友、远亲等",
+      "notable_influences": []
+    }
+  },
+  "macrosystem": {
+    "_description": "文化、社会、经济、政治大环境",
+    "cultural_background": {
+      "primary_culture": null,
+      "cultural_values": [],
+      "cultural_conflicts": []
+    },
+    "socioeconomic_status": {
+      "current_level": null,
+      "trajectory": null,
+      "perceived_vs_actual": null
+    },
+    "social_class_identity": {
+      "self_identification": null,
+      "mobility_perception": null
+    },
+    "political_environment": {
+      "country_region": null,
+      "political_climate": null,
+      "personal_engagement": null
+    },
+    "economic_environment": {
+      "general_conditions": null,
+      "personal_impact": null
+    },
+    "generational_context": {
+      "generation": null,
+      "generational_characteristics": [],
+      "generational_conflicts": []
+    }
+  },
+  "chronosystem": {
+    "_description": "时间维度：生命历程中的变化",
+    "life_stage": {
+      "current_stage": null,
+      "stage_specific_challenges": [],
+      "stage_specific_opportunities": []
+    },
+    "major_life_transitions": [],
+    "historical_events_impact": {
+      "events": [],
+      "personal_impact": []
+    },
+    "anticipated_changes": []
+  },
+  "environment_satisfaction": {
+    "overall": null,
+    "by_domain": {
+      "family": null,
+      "work": null,
+      "social": null,
+      "living": null,
+      "financial": null
+    }
+  },
+  "evidence_log": []
+}

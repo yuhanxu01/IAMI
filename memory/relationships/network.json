@@ -1,0 +1,90 @@
+{
+  "_meta": {
+    "description": "人际关系网络总览 - 基于社会网络分析理论",
+    "reference": "Social Network Analysis; Bourdieu Social Capital Theory",
+    "last_updated": null,
+    "version": 1
+  },
+  "network_overview": {
+    "total_relationships": 0,
+    "active_relationships": 0,
+    "relationship_categories": {
+      "family": [],
+      "friends": [],
+      "colleagues": [],
+      "mentors": [],
+      "acquaintances": [],
+      "others": []
+    }
+  },
+  "social_capital": {
+    "network_size": {
+      "current": null,
+      "description": "社交网络的规模"
+    },
+    "network_diversity": {
+      "current": null,
+      "description": "关系类型的多样性"
+    },
+    "strong_ties": {
+      "count": 0,
+      "description": "亲密关系数量",
+      "members": []
+    },
+    "weak_ties": {
+      "count": 0,
+      "description": "弱关系（但可能提供独特资源）",
+      "members": []
+    },
+    "bridging_capital": {
+      "current": null,
+      "description": "跨圈子的连接能力"
+    },
+    "bonding_capital": {
+      "current": null,
+      "description": "圈内的凝聚力"
+    }
+  },
+  "key_relationships": {
+    "most_influential": [],
+    "most_trusted": [],
+    "most_conflicted": [],
+    "most_dependent_on_me": [],
+    "i_most_depend_on": []
+  },
+  "relationship_patterns": {
+    "attachment_style": {
+      "current": null,
+      "types": ["安全型", "焦虑型", "回避型", "混乱型"],
+      "evidence": []
+    },
+    "social_orientation": {
+      "current": null,
+      "description": "主动社交还是被动社交"
+    },
+    "conflict_style": {
+      "current": null,
+      "types": ["竞争", "合作", "妥协", "回避", "迁就"]
+    },
+    "boundary_setting": {
+      "current": null,
+      "description": "设定人际边界的能力"
+    }
+  },
+  "social_roles": {
+    "in_family": null,
+    "in_work": null,
+    "in_friend_groups": null,
+    "self_perceived_roles": []
+  },
+  "relationship_history": {
+    "significant_gains": [],
+    "significant_losses": [],
+    "patterns_observed": []
+  },
+  "files": {
+    "_note": "每个重要人物单独建立档案文件",
+    "template": "_template.md",
+    "people": []
+  }
+}
