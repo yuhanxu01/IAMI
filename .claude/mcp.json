@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "iami-graphrag": {
+      "command": "python",
+      "args": ["/home/user/IAMI/graphrag/server/mcp_server.py"],
+      "env": {
+        "DEEPSEEK_API_KEY": "",
+        "GRAPHRAG_INDEX_DIR": "/home/user/IAMI/graphrag/storage/index",
+        "LOG_LEVEL": "INFO"
+      }
+    }
+  }
+}
