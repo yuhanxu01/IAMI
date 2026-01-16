@@ -22,6 +22,13 @@ IAMI/
 │   │   ├── thinking_patterns.json # 思维模式
 │   │   ├── language_style.json  # 语言风格
 │   │   └── knowledge.json       # 知识储备
+│   ├── relationships/           # 人际关系网络
+│   │   ├── network.json         # 关系网络总览
+│   │   ├── _template.md         # 人物档案模板
+│   │   └── [人名].md            # 各个重要人物的档案
+│   ├── environment/             # 生态环境系统
+│   │   ├── ecological_systems.json  # Bronfenbrenner 五层系统
+│   │   └── social_identity.json     # 社会身份认同
 │   └── timeline/                # 思想演变时间轴
 │       ├── snapshots.json       # 思想快照
 │       └── evolution.md         # 演变记录
@@ -36,11 +43,19 @@ IAMI/
 ## 学术框架
 
 问题设计和分析基于以下学术研究：
+
+### 个体心理
 - **Big Five Inventory (BFI-2)** - 性格五因素模型
 - **Schwartz Value Survey** - 10种基本人类价值观
 - **Moral Foundations Theory** - Haidt的道德基础理论
 - **Situational Judgment Tests** - 情境判断测试方法
 - **Political Compass** - 双轴政治倾向模型
+
+### 社会心理
+- **Bronfenbrenner Ecological Systems** - 生态系统理论（微/中/外/宏/时间系统）
+- **Social Identity Theory** - Tajfel & Turner 社会认同理论
+- **Social Network Analysis** - 社会网络分析
+- **Social Capital Theory** - Bourdieu/Putnam 社会资本理论
 
 ## 如何使用
 
@@ -51,20 +66,22 @@ IAMI/
 - 读取 `modes/learn.md` 并按照其指令执行
 - 使用具体情境问题（非空洞的抽象问题）
 - 追溯真实经历，挖掘推理过程
+- 了解人际关系和社会环境
 - 所有记录带时间戳，追踪变化
 
 ### 进入模拟模式
 用户输入: `模拟模式` 或 `simulate mode`
 - 读取 `modes/simulate.md` 并按照其指令执行
-- 读取所有记忆文件和时间轴
-- 以用户**当前**的思维模式回答（考虑演变历史）
+- 读取所有记忆文件、人际关系、环境和时间轴
+- 以用户**当前**的思维模式回答（考虑环境和关系背景）
 
 ## 核心原则
 
 1. **时间维度**: 所有记录带时间戳，追踪思想演变
 2. **具体化**: 用情境判断题，不问空洞问题
 3. **真实性**: 优先追溯真实经历，而非假设性回答
-4. **学术基础**: 基于心理学研究框架，不是随意设计
+4. **生态视角**: 理解人需要理解 TA 的环境和关系
+5. **学术基础**: 基于心理学/社会学研究框架
 
 ## 模式识别规则
 
@@ -79,3 +96,5 @@ IAMI/
 - [Moral Foundations Theory](https://moralfoundations.org/)
 - [Schwartz Value Survey](https://www.mededportal.org/doi/10.15766/mep_2374-8265.10002)
 - [Political Compass](https://www.politicalcompass.org/)
+- [Bronfenbrenner Ecological Systems](https://www.simplypsychology.org/bronfenbrenner.html)
+- [Social Identity Theory](https://www.simplypsychology.org/social-identity-theory.html)
