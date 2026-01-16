@@ -1,0 +1,67 @@
+# IAMI GraphRAG Configuration
+
+# LLM Configuration (DeepSeek)
+llm:
+  provider: "deepseek"
+  api_key_env: "DEEPSEEK_API_KEY"  # Set this environment variable
+  base_url: "https://api.deepseek.com"
+  model: "deepseek-chat"
+  temperature: 0.7
+  max_tokens: 4000
+
+# Embedding Configuration
+embedding:
+  provider: "deepseek"  # or use local model
+  model: "deepseek-chat"
+  dimension: 1536
+
+# Storage Configuration
+storage:
+  index_dir: "./graphrag/storage/index"
+  cache_dir: "./graphrag/storage/cache"
+  graph_db: "./graphrag/storage/graph.db"
+
+# Data Sources
+data_sources:
+  - path: "./memory/long_term/*.json"
+    type: "json"
+    weight: 1.0
+  - path: "./memory/short_term/*.json"
+    type: "json"
+    weight: 0.8
+  - path: "./memory/relationships/*.json"
+    type: "json"
+    weight: 1.0
+  - path: "./memory/relationships/*.md"
+    type: "markdown"
+    weight: 1.0
+  - path: "./memory/environment/*.json"
+    type: "json"
+    weight: 0.9
+  - path: "./memory/timeline/*.json"
+    type: "json"
+    weight: 1.0
+  - path: "./memory/conversations/*.md"
+    type: "markdown"
+    weight: 0.7
+
+# Indexing Configuration
+indexing:
+  chunk_size: 512
+  chunk_overlap: 50
+  enable_entity_extraction: true
+  enable_relationship_extraction: true
+  enable_temporal_tracking: true
+
+# Query Configuration
+query:
+  top_k: 5
+  similarity_threshold: 0.7
+  enable_reranking: true
+  enable_context_expansion: true
+
+# MCP Server Configuration
+mcp:
+  name: "iami-graphrag"
+  version: "1.0.0"
+  port: 3000

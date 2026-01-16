@@ -1,0 +1,33 @@
+# Core GraphRAG
+lightrag-hku
+
+# LLM and API clients
+openai>=1.0.0
+httpx>=0.25.0
+
+# Vector Store and Graph
+hnswlib>=0.8.0
+networkx>=3.0
+nano-vectordb>=0.0.4
+
+# Data Processing
+pyyaml>=6.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+
+# MCP Server
+mcp>=1.0.0
+
+# Visualization
+plotly>=5.0.0
+pyvis>=0.3.0
+
+# File Watching (for real-time updates)
+watchdog>=3.0.0
+
+# CLI
+click>=8.0.0
+rich>=13.0.0
+
+# Text processing
+tenacity>=8.0.0

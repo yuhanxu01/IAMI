@@ -2,6 +2,28 @@
 
 让 Claude Code 学习并模拟你的思维模式的项目。
 
+## 🆕 GraphRAG 知识检索系统
+
+现已集成 **GraphRAG** 知识图谱检索系统，提供强大的记忆检索和分析能力：
+
+- 🔍 **智能检索**: 基于 LightRAG 的知识图谱查询
+- 🤖 **Claude Code 集成**: 通过 MCP Server 无缝对接
+- 📊 **可视化**: 人际关系网络和思想演变时间轴
+- ⚡ **实时更新**: 自动监控文件变化并更新索引
+- 💻 **本地运行**: 完全本地部署，使用 DeepSeek API
+
+**快速开始**:
+```bash
+pip install -r graphrag/requirements.txt
+cp .env.example .env  # 填入 DEEPSEEK_API_KEY
+python graphrag/cli.py build
+python graphrag/cli.py query "我的性格特征是什么？"
+```
+
+**详细文档**: [GraphRAG 快速指南](./graphrag/QUICKSTART.md) | [完整文档](./graphrag/README.md)
+
+---
+
 ## 项目概述
 
 IAMI 是一个让 AI 成为"数字自我"的系统。通过持续的对话和学习，Claude 会逐渐理解你的：
@@ -74,6 +96,45 @@ IAMI/
 - `元分析` - Claude 跳出角色分析模拟准确度
 - `补充记忆` - 临时切换到学习模式
 
+## GraphRAG 使用指南
+
+### 命令行工具
+
+```bash
+# 构建索引
+python graphrag/cli.py build
+
+# 查询知识图谱
+python graphrag/cli.py query "我的价值观是什么？"
+
+# 生成可视化
+python graphrag/cli.py visualize
+
+# 查看统计
+python graphrag/cli.py stats
+
+# 实时监控（自动更新索引）
+python graphrag/cli.py watch
+```
+
+### Claude Code 集成
+
+1. 编辑 `.claude/mcp.json` 并填入你的 DeepSeek API Key
+2. 启动 Claude Code
+3. 在对话中直接问：
+   - "查询我的性格特征"
+   - "显示我的人际关系网络"
+   - "查看我的思想演变时间轴"
+
+### 更多文档
+
+- [快速开始](./graphrag/QUICKSTART.md) - 5分钟快速部署
+- [完整文档](./graphrag/README.md) - 详细功能说明
+- [部署指南](./graphrag/DEPLOYMENT.md) - 部署步骤和配置
+- [集成指南](./graphrag/INTEGRATION.md) - Claude Code 集成详解
+
+---
+
 ## 隐私说明
 
-所有记忆数据存储在本地文件中，你可以随时查看、编辑或删除。
+所有记忆数据存储在本地文件中，你可以随时查看、编辑或删除。GraphRAG 索引也完全本地存储，只有查询文本会发送到 LLM API。
