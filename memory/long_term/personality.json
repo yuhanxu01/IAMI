@@ -1,0 +1,29 @@
+{
+  "big_five": {
+    "openness": {
+      "level": null,
+      "description": null
+    },
+    "conscientiousness": {
+      "level": null,
+      "description": null
+    },
+    "extraversion": {
+      "level": null,
+      "description": null
+    },
+    "agreeableness": {
+      "level": null,
+      "description": null
+    },
+    "neuroticism": {
+      "level": null,
+      "description": null
+    }
+  },
+  "traits": [],
+  "strengths": [],
+  "weaknesses": [],
+  "evidence": [],
+  "last_updated": null
+}

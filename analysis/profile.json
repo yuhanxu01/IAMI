@@ -1,0 +1,22 @@
+{
+  "summary": null,
+  "one_line_description": null,
+  "key_characteristics": [],
+  "predictable_behaviors": [],
+  "unique_traits": [],
+  "potential_blind_spots": [],
+  "growth_areas": [],
+  "simulation_confidence": {
+    "overall": 0,
+    "by_area": {
+      "personality": 0,
+      "values": 0,
+      "thinking": 0,
+      "language": 0,
+      "knowledge": 0
+    }
+  },
+  "last_updated": null,
+  "total_conversations": 0,
+  "total_questions_asked": 0
+}

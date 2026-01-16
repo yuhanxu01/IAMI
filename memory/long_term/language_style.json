@@ -1,0 +1,33 @@
+{
+  "vocabulary": {
+    "frequent_words": [],
+    "unique_expressions": [],
+    "filler_words": [],
+    "avoided_words": []
+  },
+  "sentence_structure": {
+    "average_length": null,
+    "complexity": null,
+    "patterns": []
+  },
+  "formality_level": null,
+  "tone": {
+    "default": null,
+    "when_happy": null,
+    "when_frustrated": null,
+    "when_professional": null
+  },
+  "humor_style": {
+    "type": null,
+    "frequency": null,
+    "examples": []
+  },
+  "communication_preferences": {
+    "directness": null,
+    "detail_level": null,
+    "emoji_usage": null
+  },
+  "typical_phrases": [],
+  "examples": [],
+  "last_updated": null
+}

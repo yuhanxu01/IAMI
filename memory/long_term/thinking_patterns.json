@@ -1,0 +1,26 @@
+{
+  "decision_style": {
+    "approach": null,
+    "speed": null,
+    "factors_considered": []
+  },
+  "analysis_approach": {
+    "preferred_method": null,
+    "depth": null,
+    "structure": null
+  },
+  "risk_attitude": {
+    "level": null,
+    "context_variations": {}
+  },
+  "problem_solving": {
+    "first_instinct": null,
+    "process": [],
+    "tools_preferred": []
+  },
+  "common_biases": [],
+  "reasoning_patterns": [],
+  "mental_models": [],
+  "evidence": [],
+  "last_updated": null
+}
