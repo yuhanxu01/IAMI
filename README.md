@@ -1,4 +1,4 @@
-# IAMI - I Am My Intelligence
+# IAMI - I Am I
 
 让 Claude Code 学习并模拟你的思维模式的项目。
 
