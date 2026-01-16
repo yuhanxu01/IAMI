@@ -1,29 +1,99 @@
 {
+  "_meta": {
+    "description": "性格特征记录 - 基于 Big Five Inventory (BFI-2) 框架",
+    "reference": "Soto, C. J., & John, O. P. (2017). The next Big Five Inventory (BFI-2)",
+    "last_updated": null,
+    "version": 1
+  },
   "big_five": {
-    "openness": {
-      "level": null,
-      "description": null
-    },
-    "conscientiousness": {
-      "level": null,
-      "description": null
-    },
     "extraversion": {
-      "level": null,
-      "description": null
+      "domain_score": null,
+      "facets": {
+        "sociability": { "score": null, "history": [] },
+        "assertiveness": { "score": null, "history": [] },
+        "energy_level": { "score": null, "history": [] }
+      },
+      "behavioral_evidence": [],
+      "history": []
     },
     "agreeableness": {
-      "level": null,
-      "description": null
+      "domain_score": null,
+      "facets": {
+        "compassion": { "score": null, "history": [] },
+        "respectfulness": { "score": null, "history": [] },
+        "trust": { "score": null, "history": [] }
+      },
+      "behavioral_evidence": [],
+      "history": []
     },
-    "neuroticism": {
-      "level": null,
-      "description": null
+    "conscientiousness": {
+      "domain_score": null,
+      "facets": {
+        "organization": { "score": null, "history": [] },
+        "productiveness": { "score": null, "history": [] },
+        "responsibility": { "score": null, "history": [] }
+      },
+      "behavioral_evidence": [],
+      "history": []
+    },
+    "negative_emotionality": {
+      "domain_score": null,
+      "facets": {
+        "anxiety": { "score": null, "history": [] },
+        "depression": { "score": null, "history": [] },
+        "emotional_volatility": { "score": null, "history": [] }
+      },
+      "behavioral_evidence": [],
+      "history": []
+    },
+    "open_mindedness": {
+      "domain_score": null,
+      "facets": {
+        "intellectual_curiosity": { "score": null, "history": [] },
+        "aesthetic_sensitivity": { "score": null, "history": [] },
+        "creative_imagination": { "score": null, "history": [] }
+      },
+      "behavioral_evidence": [],
+      "history": []
     }
   },
-  "traits": [],
-  "strengths": [],
-  "weaknesses": [],
-  "evidence": [],
-  "last_updated": null
+  "cognitive_style": {
+    "thinking_style": {
+      "analytical_vs_intuitive": null,
+      "description": null,
+      "history": []
+    },
+    "decision_speed": {
+      "current": null,
+      "history": []
+    },
+    "risk_tolerance": {
+      "current": null,
+      "context_variations": {},
+      "history": []
+    },
+    "need_for_cognition": {
+      "score": null,
+      "description": "享受思考复杂问题的程度",
+      "history": []
+    },
+    "actively_open_minded_thinking": {
+      "score": null,
+      "description": "考虑替代观点、修正信念的倾向",
+      "history": []
+    }
+  },
+  "temperament": {
+    "baseline_mood": null,
+    "emotional_reactivity": null,
+    "stress_response_pattern": null,
+    "history": []
+  },
+  "situational_patterns": {
+    "under_pressure": null,
+    "in_conflict": null,
+    "when_excited": null,
+    "when_bored": null
+  },
+  "evidence_log": []
 }

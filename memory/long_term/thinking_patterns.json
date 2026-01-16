@@ -1,26 +1,65 @@
 {
-  "decision_style": {
-    "approach": null,
-    "speed": null,
-    "factors_considered": []
+  "_meta": {
+    "description": "思维模式记录 - 包含决策风格、认知偏见、推理模式",
+    "last_updated": null,
+    "version": 1
   },
-  "analysis_approach": {
-    "preferred_method": null,
-    "depth": null,
-    "structure": null
+  "decision_making": {
+    "style": {
+      "current": null,
+      "types": ["分析型", "直觉型", "依赖型", "回避型", "自发型"],
+      "history": []
+    },
+    "process": {
+      "information_gathering": null,
+      "evaluation_criteria": [],
+      "typical_timeline": null
+    },
+    "under_uncertainty": {
+      "approach": null,
+      "risk_attitude": null,
+      "ambiguity_tolerance": null
+    },
+    "situational_evidence": []
   },
-  "risk_attitude": {
-    "level": null,
-    "context_variations": {}
+  "reasoning_patterns": {
+    "preferred_frameworks": [],
+    "argument_style": {
+      "current": null,
+      "description": null
+    },
+    "evidence_weighting": {
+      "data_vs_anecdote": null,
+      "expert_vs_personal": null
+    },
+    "counterfactual_thinking": {
+      "frequency": null,
+      "focus": null
+    }
+  },
+  "cognitive_biases": {
+    "identified_biases": [],
+    "self_awareness_level": null,
+    "evidence": []
   },
   "problem_solving": {
-    "first_instinct": null,
-    "process": [],
-    "tools_preferred": []
+    "approach": {
+      "current": null,
+      "description": null
+    },
+    "when_stuck": {
+      "typical_response": null,
+      "help_seeking_threshold": null
+    },
+    "creativity_style": null
   },
-  "common_biases": [],
-  "reasoning_patterns": [],
-  "mental_models": [],
-  "evidence": [],
-  "last_updated": null
+  "mental_models": {
+    "frequently_used": [],
+    "domain_specific": {}
+  },
+  "situational_judgments": {
+    "_description": "记录用户对具体情境的判断和推理",
+    "scenarios": []
+  },
+  "evidence_log": []
 }

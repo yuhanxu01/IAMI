@@ -1,18 +1,121 @@
 {
-  "core_values": [],
-  "beliefs": {
-    "about_life": [],
-    "about_people": [],
-    "about_work": [],
-    "about_society": []
+  "_meta": {
+    "description": "价值观记录 - 基于 Schwartz Value Survey 框架",
+    "reference": "Schwartz, S. H. (1992). Universals in the content and structure of values",
+    "last_updated": null,
+    "version": 1
   },
-  "priorities": {
-    "life_priorities": [],
-    "work_priorities": [],
-    "relationship_priorities": []
+  "schwartz_values": {
+    "self_direction": {
+      "current_score": null,
+      "description": "独立思考和行动的自由",
+      "history": []
+    },
+    "stimulation": {
+      "current_score": null,
+      "description": "追求刺激、新奇和挑战",
+      "history": []
+    },
+    "hedonism": {
+      "current_score": null,
+      "description": "追求愉悦和感官满足",
+      "history": []
+    },
+    "achievement": {
+      "current_score": null,
+      "description": "通过展示能力获得成功",
+      "history": []
+    },
+    "power": {
+      "current_score": null,
+      "description": "社会地位、声望、控制力",
+      "history": []
+    },
+    "security": {
+      "current_score": null,
+      "description": "安全、和谐、稳定",
+      "history": []
+    },
+    "conformity": {
+      "current_score": null,
+      "description": "遵守社会规范和期望",
+      "history": []
+    },
+    "tradition": {
+      "current_score": null,
+      "description": "尊重传统文化和习俗",
+      "history": []
+    },
+    "benevolence": {
+      "current_score": null,
+      "description": "关心亲近之人的福祉",
+      "history": []
+    },
+    "universalism": {
+      "current_score": null,
+      "description": "关心所有人和自然的福祉",
+      "history": []
+    }
   },
-  "moral_principles": [],
+  "moral_foundations": {
+    "_reference": "Haidt & Graham - Moral Foundations Theory",
+    "care_harm": {
+      "current_score": null,
+      "description": "关心他人，避免伤害",
+      "history": []
+    },
+    "fairness_cheating": {
+      "current_score": null,
+      "description": "公正、权利、正义",
+      "history": []
+    },
+    "loyalty_betrayal": {
+      "current_score": null,
+      "description": "群体忠诚、爱国",
+      "history": []
+    },
+    "authority_subversion": {
+      "current_score": null,
+      "description": "尊重权威、传统",
+      "history": []
+    },
+    "sanctity_degradation": {
+      "current_score": null,
+      "description": "纯洁、神圣",
+      "history": []
+    },
+    "liberty_oppression": {
+      "current_score": null,
+      "description": "自由、反对压迫",
+      "history": []
+    }
+  },
+  "political_orientation": {
+    "economic_axis": {
+      "current_position": null,
+      "description": "经济左右（集体主义-个人主义）",
+      "history": []
+    },
+    "social_axis": {
+      "current_position": null,
+      "description": "社会自由-保守",
+      "history": []
+    }
+  },
+  "core_beliefs": {
+    "about_human_nature": {
+      "current": null,
+      "history": []
+    },
+    "about_society": {
+      "current": null,
+      "history": []
+    },
+    "about_life_meaning": {
+      "current": null,
+      "history": []
+    }
+  },
   "deal_breakers": [],
-  "evidence": [],
-  "last_updated": null
+  "evidence_log": []
 }
