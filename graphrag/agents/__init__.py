@@ -11,6 +11,11 @@ from .iami_agents import (
     IAMISimulationAgent,
     IAMIAnalysisAgent
 )
+from .story_agent import (
+    IAMIStoryAgent,
+    StoryGenre,
+    StoryState
+)
 
 __all__ = [
     "AdaptiveRAGAgent",
@@ -19,5 +24,8 @@ __all__ = [
     "create_adaptive_agent",
     "IAMILearningAgent",
     "IAMISimulationAgent",
-    "IAMIAnalysisAgent"
+    "IAMIAnalysisAgent",
+    "IAMIStoryAgent",
+    "StoryGenre",
+    "StoryState"
 ]

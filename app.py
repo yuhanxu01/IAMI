@@ -156,8 +156,8 @@ def sidebar_menu():
 
         selected = option_menu(
             menu_title=None,
-            options=["首页", "学习模式", "模拟模式", "记忆浏览", "可视化", "索引管理"],
-            icons=["house", "mortarboard", "chat", "database", "graph-up", "gear"],
+            options=["首页", "学习模式", "故事模式", "模拟模式", "记忆浏览", "可视化", "索引管理"],
+            icons=["house", "mortarboard", "book", "chat", "database", "graph-up", "gear"],
             menu_icon="cast",
             default_index=0,
         )
@@ -222,6 +222,14 @@ def home_page():
         - 测试 AI 对你的理解程度
         """)
 
+        st.markdown("#### 📖 故事模式 (新)")
+        st.markdown("""
+        - 沉浸式故事角色扮演
+        - 每次全新生成的原创剧情
+        - 你的选择真正影响剧情走向
+        - 通过行为自然分析性格
+        """)
+
     with col2:
         st.markdown("#### 🗄️ 记忆系统")
         st.markdown("""
@@ -275,7 +283,7 @@ def home_page():
     st.markdown("---")
     st.markdown("### 🚀 快速开始")
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         if st.button("📚 开始学习", use_container_width=True, type="primary"):
@@ -283,11 +291,16 @@ def home_page():
             st.rerun()
 
     with col2:
+        if st.button("📖 故事冒险", use_container_width=True, type="primary"):
+            st.session_state.selected_page = "故事模式"
+            st.rerun()
+
+    with col3:
         if st.button("💬 测试模拟", use_container_width=True):
             st.session_state.selected_page = "模拟模式"
             st.rerun()
 
-    with col3:
+    with col4:
         if st.button("🗄️ 浏览记忆", use_container_width=True):
             st.session_state.selected_page = "记忆浏览"
             st.rerun()
@@ -354,6 +367,9 @@ def main():
     elif selected == "学习模式":
         from pages import learning_mode
         learning_mode.render()
+    elif selected == "故事模式":
+        from pages import story_mode
+        story_mode.render()
     elif selected == "模拟模式":
         from pages import simulation_mode
         simulation_mode.render()
