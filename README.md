@@ -20,7 +20,28 @@ python graphrag/cli.py build
 python graphrag/cli.py query "我的性格特征是什么？"
 ```
 
-**详细文档**: [GraphRAG 快速指南](./graphrag/QUICKSTART.md) | [完整文档](./graphrag/README.md)
+**详细文档**: [GraphRAG 快速指南](./graphrag/QUICKSTART.md) | [完整文档](./graphrag/README.md) | [混合 RAG 架构](./graphrag/HYBRID_RAG_GUIDE.md)
+
+## 🎨 Streamlit Web UI (新增)
+
+现已提供**交互式 Web 界面**，让你更方便地使用 IAMI 系统：
+
+- 📚 **学习模式**: 基于学术框架的智能提问系统
+- 💬 **模拟模式**: AI 以你的思维模式对话
+- 🗄️ **记忆浏览**: 可视化查看所有记忆数据
+- 📊 **数据可视化**: 性格雷达图、价值观分布等
+- ⚙️ **索引管理**: 管理 LightRAG + ChromaDB 混合检索
+
+**快速启动**:
+```bash
+# 安装依赖
+pip install -r graphrag/requirements.txt
+
+# 启动 Web UI
+streamlit run app.py
+```
+
+**详细文档**: [Streamlit UI 使用指南](./STREAMLIT_UI_GUIDE.md)
 
 ---
 
