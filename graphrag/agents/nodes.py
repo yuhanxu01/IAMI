@@ -5,19 +5,39 @@ This module contains individual node functions for the retrieval workflow.
 """
 
 import os
+import logging
 from typing import Dict, Any, List
 from langchain_openai import ChatOpenAI
+from graphrag.llm_providers import create_llm
+
+# 配置日志
+logger = logging.getLogger(__name__)
 
 
-# Initialize LLM
-def get_llm(model: str = "deepseek-chat", temperature: float = 0):
-    """Get LLM instance"""
-    return ChatOpenAI(
-        model=model,
-        temperature=temperature,
-        openai_api_key=os.getenv("DEEPSEEK_API_KEY"),
-        openai_api_base=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com/v1")
-    )
+# Initialize LLM - 使用统一的配置系统
+def get_llm(provider: str = None):
+    """
+    获取 LLM 实例
+
+    Args:
+        provider: LLM提供者名称 (None 则使用环境变量 LLM_PROVIDER)
+
+    Returns:
+        ChatOpenAI 实例
+    """
+    try:
+        return create_llm(provider)
+    except Exception as e:
+        logger.error(f"Failed to create LLM: {e}")
+        # 回退到默认配置
+        return ChatOpenAI(
+            model="deepseek-chat",
+            temperature=0,
+            openai_api_key=os.getenv("DEEPSEEK_API_KEY"),
+            openai_api_base=os.getenv("OPENAI_API_BASE", "https://api.deepseek.com/v1"),
+            timeout=30.0,
+            request_timeout=30.0
+        )
 
 
 async def plan_query_node(state: Dict[str, Any]) -> Dict[str, Any]:
@@ -96,8 +116,11 @@ async def retrieve_lightrag_node(state: Dict[str, Any]) -> Dict[str, Any]:
         else:
             state["lightrag_docs"] = []
 
+    except (ConnectionError, TimeoutError) as e:
+        logger.error(f"LightRAG connection/timeout error: {e}")
+        state["lightrag_docs"] = []
     except Exception as e:
-        print(f"LightRAG retrieval error: {e}")
+        logger.warning(f"LightRAG retrieval error: {e}")
         state["lightrag_docs"] = []
 
     return state
@@ -124,8 +147,11 @@ async def retrieve_chromadb_node(state: Dict[str, Any]) -> Dict[str, Any]:
 
         state["chromadb_docs"] = results
 
+    except (ConnectionError, TimeoutError) as e:
+        logger.error(f"ChromaDB connection/timeout error: {e}")
+        state["chromadb_docs"] = []
     except Exception as e:
-        print(f"ChromaDB retrieval error: {e}")
+        logger.warning(f"ChromaDB retrieval error: {e}")
         state["chromadb_docs"] = []
 
     return state
@@ -219,8 +245,11 @@ async def generate_answer_node(state: Dict[str, Any]) -> Dict[str, Any]:
     try:
         response = await llm.ainvoke(prompt)
         state["final_answer"] = response.content
+    except (ConnectionError, TimeoutError) as e:
+        logger.error(f"LLM connection/timeout error: {e}")
+        state["final_answer"] = "抱歉，网络连接出现问题，请稍后重试。"
     except Exception as e:
-        print(f"Answer generation error: {e}")
+        logger.error(f"Answer generation error: {e}")
         state["final_answer"] = f"生成答案时出错: {str(e)}"
 
     return state

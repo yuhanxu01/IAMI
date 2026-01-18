@@ -1,19 +1,44 @@
 # IAMI GraphRAG Configuration
 
-# LLM Configuration (DeepSeek)
+# LLM Configuration
+# 支持的提供者: deepseek, glm, openai
 llm:
-  provider: "deepseek"
-  api_key_env: "DEEPSEEK_API_KEY"  # Set this environment variable
-  base_url: "https://api.deepseek.com"
-  model: "deepseek-chat"
+  provider: "deepseek"  # 默认使用DeepSeek（可选: "deepseek", "glm", "openai"）
+
+  # DeepSeek 配置
+  deepseek:
+    api_key_env: "DEEPSEEK_API_KEY"
+    base_url: "https://api.deepseek.com/v1"
+    model: "deepseek-chat"
+    embedding_model: "text-embedding-3-small"
+    dimension: 1536
+
+  # GLM-4 (智谱AI) 配置
+  glm:
+    api_key_env: "GLM_API_KEY"
+    base_url: "https://open.bigmodel.cn/api/paas/v4"
+    model: "glm-4.7"  # 或 "glm-4", "glm-4-plus", "glm-4-air", "glm-4-flash"
+    embedding_model: "embedding-2"
+    dimension: 1024
+
+  # OpenAI 配置
+  openai:
+    api_key_env: "OPENAI_API_KEY"
+    base_url: "https://api.openai.com/v1"
+    model: "gpt-4o"
+    embedding_model: "text-embedding-3-small"
+    dimension: 1536
+
+  # 通用配置（会被上面选中的提供者配置覆盖）
   temperature: 0.7
   max_tokens: 4000
 
-# Embedding Configuration
+# Embedding Configuration (已废弃，使用 llm.[provider].embedding_model)
+# 保留此部分以保持向后兼容
 embedding:
-  provider: "deepseek"  # or use local model
-  model: "deepseek-chat"
-  dimension: 1536
+  provider: "auto"  # 自动使用LLM提供者的embedding
+  model: "auto"
+  dimension: "auto"
 
 # Storage Configuration
 storage:

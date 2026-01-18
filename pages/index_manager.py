@@ -14,7 +14,7 @@ import streamlit as st
 
 def render():
     """渲染索引管理页面"""
-    st.markdown("# ⚙️ 索引管理")
+    st.markdown("# ◇ 索引管理")
     st.markdown("管理 RAG 检索系统")
     st.markdown("---")
 
@@ -25,7 +25,7 @@ def render():
     indexer = st.session_state.indexer
 
     # 选择功能
-    tab1, tab2, tab3 = st.tabs(["📊 统计信息", "🔄 索引管理", "🧪 查询测试"])
+    tab1, tab2, tab3 = st.tabs(["◈ 统计信息", "◈ 索引管理", "◈ 查询测试"])
 
     with tab1:
         show_index_stats(indexer)
@@ -39,32 +39,85 @@ def render():
 
 def show_index_stats(indexer):
     """显示索引统计信息"""
-    st.markdown("### 📊 索引统计")
+    st.markdown("### ◈ 索引统计概览")
 
     try:
         stats = indexer.get_stats()
-
-        col1, col2 = st.columns(2)
-
+        
+        # 顶部总览卡片
+        lightrag_stats = stats.get("lightrag", {})
+        chroma_stats = stats.get("chromadb", {})
+        
+        # 使用自定义 CSS 卡片展示核心数据
+        col1, col2, col3, col4 = st.columns(4)
+        
         with col1:
-            st.markdown("#### LightRAG (知识图谱)")
-            lightrag_stats = stats.get("lightrag", {})
-
-            st.metric("工作目录", lightrag_stats.get("working_dir", "N/A"))
-            st.metric("文件数", len(lightrag_stats.get("files", [])))
-
-            if lightrag_stats.get("files"):
-                with st.expander("查看文件列表"):
-                    for f in lightrag_stats["files"]:
-                        st.write(f"- {f}")
-
+            file_count = len(lightrag_stats.get("files", []))
+            st.markdown(f'''
+                <div class="stats-card">
+                    <div class="stats-number">{file_count}</div>
+                    <div class="stats-label">源文件数量</div>
+                </div>
+            ''', unsafe_allow_html=True)
+            
         with col2:
-            st.markdown("#### ChromaDB (向量库)")
-            chroma_stats = stats.get("chromadb", {})
+            doc_count = chroma_stats.get("document_count", 0)
+            st.markdown(f'''
+                <div class="stats-card">
+                    <div class="stats-number">{doc_count}</div>
+                    <div class="stats-label">向量文档数</div>
+                </div>
+            ''', unsafe_allow_html=True)
 
-            st.metric("集合名称", chroma_stats.get("collection_name", "N/A"))
-            st.metric("文档数量", chroma_stats.get("document_count", 0))
-            st.metric("持久化目录", chroma_stats.get("persist_directory", "N/A"))
+        with col3:
+            # 模拟一个实体数量统计 (如果 graph 存在)
+            element_count = lightrag_stats.get("element_count", "N/A")
+            st.markdown(f'''
+                <div class="stats-card">
+                    <div class="stats-number">{element_count}</div>
+                    <div class="stats-label">图谱实体数</div>
+                </div>
+            ''', unsafe_allow_html=True)
+            
+        with col4:
+            st.markdown(f'''
+                <div class="stats-card">
+                    <div class="stats-number">已连接</div>
+                    <div class="stats-label">系统状态</div>
+                </div>
+            ''', unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        
+        # 详细信息分栏
+        detail_col1, detail_col2 = st.columns(2)
+        
+        with detail_col1:
+            st.markdown("""
+                <div style='background: rgba(102, 126, 234, 0.1); padding: 20px; border-radius: 15px; border-left: 5px solid #667eea;'>
+                    <h4 style='margin-top:0'>◈ LightRAG 知识图谱详情</h4>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("##### 存储路径")
+            st.code(lightrag_stats.get("working_dir", "N/A"), language="bash")
+            
+            if lightrag_stats.get("files"):
+                with st.expander("📁 查看源文件列表", expanded=False):
+                    for f in lightrag_stats["files"]:
+                        st.text(f"• {f}")
+                        
+        with detail_col2:
+            st.markdown("""
+                <div style='background: rgba(121, 85, 72, 0.1); padding: 20px; border-radius: 15px; border-left: 5px solid #795548;'>
+                    <h4 style='margin-top:0'>◈ ChromaDB 向量库详情</h4>
+                </div>
+            """, unsafe_allow_html=True)
+            
+            st.info(f"**集合名称**: `{chroma_stats.get('collection_name', 'N/A')}`")
+            
+            st.markdown("##### 持久化目录")
+            st.code(chroma_stats.get("persist_directory", "N/A"), language="bash")
 
     except Exception as e:
         st.error(f"获取统计信息失败: {e}")
@@ -72,7 +125,7 @@ def show_index_stats(indexer):
 
 def manage_index(indexer):
     """管理索引"""
-    st.markdown("### 🔄 索引管理")
+    st.markdown("### ◇ 索引管理")
 
     # 重建索引
     st.markdown("#### 重建索引")
@@ -81,7 +134,7 @@ def manage_index(indexer):
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("🔄 重建 LightRAG 索引", type="primary", use_container_width=True):
+        if st.button("重建知识图谱索引", type="primary", use_container_width=True):
             with st.spinner("正在重建 LightRAG 索引..."):
                 try:
                     from graphrag.indexer.data_loader import IAMIDataLoader
@@ -96,7 +149,7 @@ def manage_index(indexer):
                         st.session_state.indexer.lightrag_indexer.index_documents(documents)
                     )
 
-                    st.success("✓ LightRAG 索引重建完成")
+                    st.success("◈ 知识图谱索引重建完成")
                     st.json(results)
 
                 except Exception as e:
@@ -105,7 +158,7 @@ def manage_index(indexer):
                     st.code(traceback.format_exc())
 
     with col2:
-        if st.button("🔄 重建 ChromaDB 索引", use_container_width=True):
+        if st.button("重建对话记忆索引", use_container_width=True):
             with st.spinner("正在重建 ChromaDB 索引..."):
                 try:
                     # 清空现有集合
@@ -114,9 +167,9 @@ def manage_index(indexer):
                     )
 
                     if await_result:
-                        st.success("✓ ChromaDB 集合已重置")
+                        st.success("◈ 对话记忆集合已重置")
                     else:
-                        st.error("✗ 重置失败")
+                        st.error("◇ 重置失败")
 
                 except Exception as e:
                     st.error(f"重置失败: {e}")
@@ -140,7 +193,7 @@ def manage_index(indexer):
 
     doc_content = st.text_area("文档内容", height=150)
 
-    if st.button("📝 索引文档", use_container_width=True, disabled=not doc_content):
+    if st.button("提交文档", use_container_width=True, disabled=not doc_content):
         if doc_content:
             with st.spinner("正在索引..."):
                 try:
@@ -156,7 +209,7 @@ def manage_index(indexer):
 
                     result = asyncio.run(indexer.index_document(doc))
 
-                    st.success("✓ 文档已索引")
+                    st.success("◈ 文档已提交")
                     st.json(result)
 
                 except Exception as e:
@@ -165,10 +218,10 @@ def manage_index(indexer):
 
 def test_query(indexer):
     """测试查询"""
-    st.markdown("### 🧪 查询测试")
+    st.markdown("### ◇ 查询测试")
 
     # 查询输入
-    query = st.text_input("输入查询", placeholder="例如：用户的性格特征是什么？")
+    query = st.text_input("输入查询", placeholder="例如：您的性格特征是什么？")
 
     col1, col2 = st.columns(2)
 
@@ -186,7 +239,7 @@ def test_query(indexer):
         if use_chromadb:
             chromadb_k = st.slider("检索数量", 1, 20, 5)
 
-    if st.button("🔍 执行查询", type="primary", disabled=not query):
+    if st.button("执行查询", type="primary", disabled=not query):
         if query:
             with st.spinner("正在查询..."):
                 try:
@@ -204,17 +257,17 @@ def test_query(indexer):
                         lightrag_res = result["lightrag_result"]
 
                         if lightrag_res.get("success"):
-                            st.success("✓ LightRAG 查询成功")
+                            st.success("◈ 知识图谱查询成功")
                             st.markdown(lightrag_res.get("result", ""))
                         else:
-                            st.error(f"✗ LightRAG 查询失败: {lightrag_res.get('error')}")
+                            st.error("◇ 知识图谱查询失败")
 
                     if use_chromadb and result.get("chromadb_results"):
                         st.markdown("---")
-                        st.markdown("#### ChromaDB 结果")
+                        st.markdown("#### 对话记忆结果")
                         chromadb_res = result["chromadb_results"]
 
-                        st.success(f"✓ 找到 {len(chromadb_res)} 个相关文档")
+                        st.success(f"◈ 找到 {len(chromadb_res)} 个相关文档")
 
                         for idx, doc in enumerate(chromadb_res, 1):
                             with st.expander(f"文档 {idx} (相似度: {doc.get('similarity_score', 0):.4f})"):

@@ -13,6 +13,7 @@ import asyncio
 
 from .graph_indexer import IAMIGraphIndexer, IndexConfig
 from .chroma import ChromaDBIndexer
+from graphrag.llm_providers import LLMProviderFactory, LLMProviderConfig
 
 
 class HybridIndexer:
@@ -49,24 +50,45 @@ class HybridIndexer:
 
     def __init__(
         self,
+        user_id: str = "default",
         lightrag_config: Optional[IndexConfig] = None,
-        chroma_persist_dir: str = "./memory/vector_store",
-        chroma_collection: str = "iami_conversations"
+        chroma_persist_dir: Optional[str] = None,
+        chroma_collection: Optional[str] = None,
+        llm_provider: Optional[str] = None
     ):
         """
         Initialize hybrid indexer.
 
         Args:
+            user_id: ID of the user for data isolation
             lightrag_config: Configuration for LightRAG indexer
             chroma_persist_dir: ChromaDB persistence directory
             chroma_collection: ChromaDB collection name
+            llm_provider: LLM provider name
         """
+        self.user_id = user_id
+        
+        # Set user-specific paths if not provided
+        base_user_dir = Path(f"data/users/{user_id}")
+        
+        if chroma_persist_dir is None:
+            chroma_persist_dir = str(base_user_dir / "memory/vector_store")
+            
+        if chroma_collection is None:
+            chroma_collection = f"iami_conversations_{user_id}"
+
         # Initialize LightRAG
         if lightrag_config is None:
+            # 使用统一的LLM配置系统
+            llm_config = LLMProviderFactory.from_env(llm_provider)
             lightrag_config = IndexConfig(
-                working_dir="./graphrag/storage/index",
-                api_key=os.getenv("DEEPSEEK_API_KEY")
+                working_dir=str(base_user_dir / "graphrag/storage/index"),
+                llm_config=llm_config
             )
+        elif lightrag_config.llm_config is None:
+            # 如果提供了IndexConfig但没有llm_config，则创建
+            lightrag_config.llm_config = LLMProviderFactory.from_env(llm_provider)
+
         self.lightrag_indexer = IAMIGraphIndexer(lightrag_config)
 
         # Initialize ChromaDB
@@ -309,11 +331,13 @@ class HybridIndexerSync:
 
     def __init__(
         self,
+        user_id: str = "default",
         lightrag_config: Optional[IndexConfig] = None,
-        chroma_persist_dir: str = "./memory/vector_store",
-        chroma_collection: str = "iami_conversations"
+        chroma_persist_dir: Optional[str] = None,
+        chroma_collection: Optional[str] = None
     ):
         self.indexer = HybridIndexer(
+            user_id=user_id,
             lightrag_config=lightrag_config,
             chroma_persist_dir=chroma_persist_dir,
             chroma_collection=chroma_collection
@@ -356,27 +380,41 @@ class HybridIndexerSync:
         return self.indexer.get_stats()
 
 
-# Convenience function
 def create_hybrid_indexer(
-    working_dir: str = "./graphrag/storage/index",
-    chroma_dir: str = "./memory/vector_store"
+    user_id: str = "default",
+    working_dir: Optional[str] = None,
+    chroma_dir: Optional[str] = None,
+    llm_provider: Optional[str] = None
 ) -> HybridIndexer:
     """
     Create a hybrid indexer with default configuration.
 
     Args:
+        user_id: ID of the user for data isolation
         working_dir: LightRAG working directory
         chroma_dir: ChromaDB persistence directory
+        llm_provider: LLM provider name
 
     Returns:
         HybridIndexer instance
     """
+    base_user_dir = Path(f"data/users/{user_id}")
+    
+    if working_dir is None:
+        working_dir = str(base_user_dir / "graphrag/storage/index")
+        
+    if chroma_dir is None:
+        chroma_dir = str(base_user_dir / "memory/vector_store")
+
+    # 使用统一的LLM配置系统
+    llm_config = LLMProviderFactory.from_env(llm_provider)
     config = IndexConfig(
         working_dir=working_dir,
-        api_key=os.getenv("DEEPSEEK_API_KEY")
+        llm_config=llm_config
     )
 
     return HybridIndexer(
+        user_id=user_id,
         lightrag_config=config,
         chroma_persist_dir=chroma_dir
     )

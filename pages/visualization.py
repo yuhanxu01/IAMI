@@ -18,8 +18,8 @@ import json
 
 def render():
     """渲染可视化页面"""
-    st.markdown("# 📊 可视化")
-    st.markdown("图形化展示你的记忆和思想演变")
+    st.markdown("# ◇ 可视化")
+    st.markdown("图形化展示您的记忆和思想演变")
     st.markdown("---")
 
     # 选择可视化类型
@@ -48,7 +48,7 @@ def render():
 
 def show_profile_overview():
     """显示人物画像概览"""
-    st.markdown("### 👤 人物画像概览")
+    st.markdown("### ◈ 人物画像概览")
 
     # 读取 profile.json
     profile_path = Path("analysis/profile.json")
@@ -56,14 +56,14 @@ def show_profile_overview():
     if not profile_path.exists():
         st.info("暂无人物画像数据")
 
-        if st.button("🔄 生成人物画像"):
+        if st.button("生成人物画像"):
             if st.session_state.agents_loaded:
                 with st.spinner("正在分析记忆并生成画像..."):
                     try:
                         agent = st.session_state.analysis_agent
                         profile = asyncio.run(agent.generate_profile())
 
-                        st.success("✓ 画像生成成功")
+                        st.success("◈ 画像生成成功")
                         st.json(profile)
                     except Exception as e:
                         st.error(f"生成失败: {e}")
@@ -97,8 +97,8 @@ def show_profile_overview():
 
 
 def show_personality_radar():
-    """显示性格特征雷达图 (Big Five)"""
-    st.markdown("### 🎯 性格特征雷达图 (Big Five)")
+    """显示性格特征雷达图"""
+    st.markdown("### ◈ 性格特征雷达图")
 
     # 读取性格数据
     personality_path = Path("memory/long_term/personality.json")
@@ -176,7 +176,7 @@ def show_personality_radar():
 
 def show_values_distribution():
     """显示价值观分布"""
-    st.markdown("### 💎 价值观分布 (Schwartz)")
+    st.markdown("### ◈ 价值观分布")
 
     values_path = Path("memory/long_term/values.json")
 
@@ -212,7 +212,7 @@ def show_values_distribution():
 
 def show_learning_progress():
     """显示学习进度"""
-    st.markdown("### 📈 学习进度")
+    st.markdown("### ◈ 学习进度")
 
     if not st.session_state.agents_loaded:
         st.error("代理未加载")
@@ -249,7 +249,7 @@ def show_learning_progress():
 
 def show_evolution_timeline():
     """显示时间演变趋势"""
-    st.markdown("### ⏰ 时间演变趋势")
+    st.markdown("### ◈ 时间演变趋势")
 
     timeline_path = Path("memory/timeline/snapshots.json")
 

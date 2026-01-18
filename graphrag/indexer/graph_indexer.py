@@ -10,21 +10,23 @@ import asyncio
 
 try:
     from lightrag import LightRAG, QueryParam
-    from lightrag.llm import openai_complete_if_cache, openai_embedding
     LIGHTRAG_AVAILABLE = True
 except ImportError:
     LIGHTRAG_AVAILABLE = False
     print("Warning: LightRAG not installed. Install with: pip install lightrag")
+
+from graphrag.llm_providers import LLMProviderFactory, LLMProviderConfig
 
 
 @dataclass
 class IndexConfig:
     """索引配置"""
     working_dir: str = "./graphrag/storage/index"
-    llm_model: str = "deepseek-chat"
-    embedding_model: str = "text-embedding-3-small"
-    api_base: str = "https://api.deepseek.com/v1"
-    api_key: Optional[str] = None
+    llm_model: str = None  # 从LLMProviderConfig获取
+    embedding_model: str = None  # 从LLMProviderConfig获取
+    api_base: str = None  # 从LLMProviderConfig获取
+    api_key: Optional[str] = None  # 从LLMProviderConfig获取
+    llm_config: Optional[LLMProviderConfig] = None  # 完整的LLM配置
 
 
 class IAMIGraphIndexer:
@@ -46,38 +48,67 @@ class IAMIGraphIndexer:
     def _init_lightrag(self):
         """初始化 LightRAG 实例"""
 
-        # 设置 API key
-        if self.config.api_key:
-            os.environ["OPENAI_API_KEY"] = self.config.api_key
+        # 获取LLM配置
+        if self.config.llm_config is None:
+            # 如果没有提供llm_config，从环境变量加载
+            llm_config = LLMProviderFactory.from_env()
+        else:
+            llm_config = self.config.llm_config
 
-        # 自定义 LLM 函数（适配 DeepSeek）
-        async def deepseek_llm_func(
+        # 设置环境变量供 LightRAG 使用
+        os.environ["OPENAI_API_KEY"] = llm_config.api_key
+        os.environ["OPENAI_BASE_URL"] = llm_config.base_url
+
+        # 创建 LLM 和 embedding 函数 (新版 LightRAG 需要)
+        from lightrag.utils import EmbeddingFunc
+        from openai import AsyncOpenAI
+        
+        # 创建 OpenAI 客户端
+        async_client = AsyncOpenAI(
+            api_key=llm_config.api_key,
+            base_url=llm_config.base_url
+        )
+        
+        # 创建 LLM 函数
+        async def llm_model_func(
             prompt, system_prompt=None, history_messages=[], **kwargs
         ) -> str:
-            return await openai_complete_if_cache(
-                model=self.config.llm_model,
-                prompt=prompt,
-                system_prompt=system_prompt,
-                history_messages=history_messages,
-                api_key=self.config.api_key,
-                base_url=self.config.api_base,
+            """使用 OpenAI 兼容 API 的 LLM 函数"""
+            messages = []
+            if system_prompt:
+                messages.append({"role": "system", "content": system_prompt})
+            messages.extend(history_messages)
+            messages.append({"role": "user", "content": prompt})
+            
+            response = await async_client.chat.completions.create(
+                model=llm_config.model,
+                messages=messages,
                 **kwargs
             )
-
-        # 自定义 Embedding 函数
-        async def deepseek_embedding_func(texts: list[str]) -> list[list[float]]:
-            return await openai_embedding(
-                texts=texts,
-                model=self.config.embedding_model,
-                api_key=self.config.api_key,
-                base_url=self.config.api_base
+            return response.choices[0].message.content
+        
+        # 创建 embedding 函数
+        async def embedding_func(texts: list[str]) -> list[list[float]]:
+            """使用 OpenAI 兼容 API 的 embedding 函数"""
+            response = await async_client.embeddings.create(
+                model=llm_config.embedding_model or "text-embedding-3-small",
+                input=texts
             )
+            return [item.embedding for item in response.data]
+        
+        # 包装为 EmbeddingFunc (LightRAG 需要这个包装器)
+        embedding_func_wrapper = EmbeddingFunc(
+            embedding_dim=llm_config.embedding_dimension,
+            max_token_size=8192,
+            func=embedding_func
+        )
 
-        # 初始化 LightRAG
+        # 初始化 LightRAG (新版 API)
         self.rag = LightRAG(
             working_dir=self.config.working_dir,
-            llm_model_func=deepseek_llm_func,
-            embedding_func=deepseek_embedding_func,
+            llm_model_name=llm_config.model,
+            llm_model_func=llm_model_func,  # 需要提供 LLM 函数
+            embedding_func=embedding_func_wrapper,
         )
 
     async def index_documents(self, documents: List[Dict[str, Any]]) -> Dict[str, Any]:

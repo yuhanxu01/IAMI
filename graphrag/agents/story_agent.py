@@ -7,12 +7,20 @@ IAMI 故事模式 Agent
 
 import os
 import json
+import logging
 import random
+import re
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 from pathlib import Path
 from langchain_openai import ChatOpenAI
+from asgiref.sync import sync_to_async
+from accounts.models import StoryTemplate, UserStory
+from django.contrib.auth.models import User
 from .iami_agents import IAMIBaseAgent
+
+# 配置日志
+logger = logging.getLogger(__name__)
 
 
 class StoryGenre:
@@ -85,10 +93,11 @@ class IAMIStoryAgent(IAMIBaseAgent):
     5. 生成故事报告
     """
 
-    def __init__(self, indexer=None):
-        super().__init__(indexer)
-        self.stories_dir = Path("memory/stories")
-        self.stories_dir.mkdir(parents=True, exist_ok=True)
+    def __init__(self, user_id: str = "default", indexer=None):
+        super().__init__(user_id=user_id, indexer=indexer)
+        # self.stories_dir is no longer needed for primary storage, but keeping for backward compat if needed?
+        # Let's fully switch to DB.
+
 
     async def generate_story_setting(
         self,
@@ -158,7 +167,7 @@ class IAMIStoryAgent(IAMIBaseAgent):
 }}
 """
 
-        response = await self.llm.ainvoke(prompt)
+        response = await self.invoke_llm(prompt, call_type="story_generate_setting")
 
         try:
             content = response.content
@@ -170,35 +179,82 @@ class IAMIStoryAgent(IAMIBaseAgent):
             story_data = json.loads(content)
 
             # 创建故事状态
-            state = StoryState()
-            state.genre = genre
-            state.setting = story_data.get("setting", {})
-            state.protagonist = story_data.get("protagonist", {})
-
-            # 添加初始场景
-            initial_scene = {
-                "scene_number": 0,
-                "title": story_data.get("title", ""),
-                "description": story_data.get("initial_scene", {}).get("description", ""),
-                "environment": story_data.get("initial_scene", {}).get("environment", ""),
-                "mood": story_data.get("initial_scene", {}).get("mood", ""),
-                "timestamp": datetime.now().isoformat()
-            }
-            state.scenes.append(initial_scene)
-
-            # 添加 NPC
-            for npc_data in story_data.get("key_npcs", []):
-                npc_name = npc_data.get("name", "")
-                state.npcs[npc_name] = npc_data
-
-            # 初始化世界状态
-            state.world_state = {
+            # 查找或创建 StoryTemplate
+            # 将生成的设定保存为 StoryTemplate
+            setting_data = {
+                "genre": genre,
+                "title": story_data.get("title", "未命名"),
+                "setting": story_data.get("setting", {}),
+                "protagonist": story_data.get("protagonist", {}),
+                "initial_scene": story_data.get("initial_scene", {}),
+                "key_npcs": story_data.get("key_npcs", []),
                 "central_conflict": story_data.get("central_conflict", ""),
-                "themes": story_data.get("potential_themes", []),
-                "tension_level": 1  # 1-10
+                "potential_themes": story_data.get("potential_themes", [])
             }
 
-            return state
+            @sync_to_async
+            def save_template_and_story(user_id_str, setting_dict):
+                # 解析 ID
+                try:
+                    uid = int(user_id_str.replace("user_", ""))
+                    user = User.objects.get(id=uid)
+                except (ValueError, User.DoesNotExist) as e:
+                    # Fallback for default/test user
+                    logger.warning(f"User lookup failed for {user_id_str}: {e}")
+                    user = User.objects.get(username="renqing") if User.objects.filter(username="renqing").exists() else User.objects.first()
+
+                # 创建模板
+                template = StoryTemplate.objects.create(
+                    title=setting_dict["title"],
+                    genre=setting_dict["genre"],
+                    description=setting_dict["setting"].get("world", "")[:200],
+                    source_data=setting_dict,
+                    created_by=user,
+                    is_public=False # 默认私有
+                )
+                
+                # 创建用户故事
+                state = StoryState()
+                state.story_id = f"db_{template.id}_{datetime.now().timestamp()}"
+                state.genre = setting_dict["genre"]
+                state.setting = setting_dict["setting"]
+                state.protagonist = setting_dict["protagonist"]
+                
+                # 初始场景
+                initial_scene = {
+                    "scene_number": 0,
+                    "title": setting_dict["title"],
+                    "description": setting_dict["initial_scene"].get("description", ""),
+                    "environment": setting_dict["initial_scene"].get("environment", ""),
+                    "mood": setting_dict["initial_scene"].get("mood", ""),
+                    "timestamp": datetime.now().isoformat()
+                }
+                state.scenes.append(initial_scene)
+                
+                # NPC
+                for npc_data in setting_dict.get("key_npcs", []):
+                    state.npcs[npc_data.get("name", "")] = npc_data
+                    
+                # World State
+                state.world_state = {
+                    "central_conflict": setting_dict.get("central_conflict", ""),
+                    "themes": setting_dict.get("potential_themes", []),
+                    "tension_level": 1
+                }
+
+                # 保存到 UserStory
+                user_story = UserStory.objects.create(
+                    user=user,
+                    template=template,
+                    current_state=state.to_dict(),
+                    is_active=True
+                )
+                
+                # 更新 ID 以匹配 DB
+                state.story_id = str(user_story.id)
+                return state
+
+            return await save_template_and_story(self.user_id, setting_data)
 
         except json.JSONDecodeError as e:
             # 回退方案
@@ -246,9 +302,17 @@ class IAMIStoryAgent(IAMIBaseAgent):
 {{
     "scene_number": {state.current_scene + 1},
     "title": "场景标题",
-    "description": "场景描写（400-500字，包含环境、人物、对话、动作等）",
+    "immediate_consequence": "对上一个选择的立即后果描写（150-200字，细致感人），如果你是开场第一章，这里可以为空字符串",
+    "description": "新的场景描写（400-500字，包含环境、人物、对话、动作等）",
     "environment_details": "环境细节",
     "character_emotions": "角色情绪",
+    "npc_reactions": {{
+        "NPC名字": "基于上一个选择的反应描述"
+    }},
+    "world_state_changes": {{
+        "tension_level": "更新后的数值(1-10)",
+        "其他变量": "数值或状态变化"
+    }},
     "key_moment": "关键时刻/冲突点",
     "choices": [
         {{
@@ -264,7 +328,7 @@ class IAMIStoryAgent(IAMIBaseAgent):
 }}
 """
 
-        response = await self.llm.ainvoke(prompt)
+        response = await self.invoke_llm(prompt, call_type="story_generate_scene")
 
         try:
             content = response.content
@@ -276,7 +340,15 @@ class IAMIStoryAgent(IAMIBaseAgent):
             scene_data = json.loads(content)
 
             # 更新世界状态
-            tension_change = scene_data.get("tension_change", 0)
+            try:
+                tension_change = int(scene_data.get("tension_change", 0))
+            except (ValueError, TypeError) as e:
+                # 如果无法转换为整数，尝试提取数字或默认为 0
+                logger.warning(f"Failed to parse tension_change: {e}")
+                val = str(scene_data.get("tension_change", "0"))
+                match = re.search(r'[-+]?\d+', val)
+                tension_change = int(match.group()) if match else 0
+
             state.world_state["tension_level"] = max(1, min(10,
                 state.world_state.get("tension_level", 5) + tension_change
             ))
@@ -351,11 +423,16 @@ class IAMIStoryAgent(IAMIBaseAgent):
 ## 用户选择
 {choice.get('text', '')}
 
-## 选择动机
+## 选择动机 (预设)
 {choice.get('motivation', '')}
+
+## 可能后果 (预设提示)
+{choice.get('potential_consequence', '')}
 
 ## 心理维度
 {choice.get('psychological_dimension', '')}
+
+请结合上述**预设的动机和后果提示**，分析用户做出此选择的深层心理原因。
 
 请返回 JSON：
 {{
@@ -377,7 +454,7 @@ class IAMIStoryAgent(IAMIBaseAgent):
 }}
 """
 
-        response = await self.llm.ainvoke(prompt)
+        response = await self.invoke_llm(prompt, call_type="story_process_choice")
 
         try:
             content = response.content
@@ -446,7 +523,7 @@ class IAMIStoryAgent(IAMIBaseAgent):
 直接返回对话内容，不要JSON格式。
 """
 
-        response = await self.llm.ainvoke(prompt)
+        response = await self.invoke_llm(prompt, call_type="story_npc_dialogue")
         return response.content
 
     async def generate_story_analysis(
@@ -508,7 +585,7 @@ class IAMIStoryAgent(IAMIBaseAgent):
 }}
 """
 
-        response = await self.llm.ainvoke(prompt)
+        response = await self.invoke_llm(prompt, call_type="story_analysis")
 
         try:
             content = response.content
@@ -528,42 +605,283 @@ class IAMIStoryAgent(IAMIBaseAgent):
                 "generated_at": datetime.now().isoformat()
             }
 
-    def save_story(self, state: StoryState):
-        """保存故事到文件"""
-        file_path = self.stories_dir / f"{state.story_id}.json"
+    async def save_story(self, state: StoryState) -> bool:
+        """保存故事到数据库，返回是否成功"""
+        @sync_to_async
+        def _save(sid, state_dict):
+            try:
+                # 尝试通过 ID 查找
+                if sid.isdigit():
+                    us = UserStory.objects.get(id=int(sid))
+                    us.current_state = state_dict
+                    us.save()
+                    return True
+            except Exception as e:
+                print(f"保存故事失败 (ID: {sid}): {e}")
+                return False
+            return False
+        
+        return await _save(state.story_id, state.to_dict())
 
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(state.to_dict(), f, ensure_ascii=False, indent=2)
-
-    def load_story(self, story_id: str) -> Optional[StoryState]:
+    async def load_story(self, story_id: str) -> Optional[StoryState]:
         """加载故事"""
-        file_path = self.stories_dir / f"{story_id}.json"
-
-        if not file_path.exists():
+        @sync_to_async
+        def _load(sid):
+            try:
+                if isinstance(sid, int) or sid.isdigit():
+                    us = UserStory.objects.get(id=int(sid))
+                    return StoryState.from_dict(us.current_state)
+            except Exception:
+                pass
             return None
 
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        return await _load(story_id)
 
-        return StoryState.from_dict(data)
-
-    def list_stories(self) -> List[Dict[str, Any]]:
+    async def list_stories(self) -> List[Dict[str, Any]]:
         """列出所有故事"""
-        stories = []
-
-        for file_path in self.stories_dir.glob("*.json"):
+        @sync_to_async
+        def _list(user_id_str):
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-
-                stories.append({
-                    "story_id": data.get("story_id"),
-                    "genre": data.get("genre"),
-                    "timestamp": data.get("timestamp"),
-                    "scenes_count": len(data.get("scenes", [])),
-                    "choices_count": len(data.get("choices_made", []))
-                })
+                uid = int(user_id_str.replace("user_", ""))
+                user = User.objects.get(id=uid)
+                stories = UserStory.objects.filter(user=user).select_related('template')
+                
+                results = []
+                for s in stories:
+                    data = s.current_state
+                    results.append({
+                        "story_id": str(s.id),
+                        "genre": data.get("genre", "Unknown"),
+                        "timestamp": s.last_played_at.isoformat(),
+                        "scenes_count": len(data.get("scenes", [])),
+                        "choices_count": len(data.get("choices_made", []))
+                    })
+                return sorted(results, key=lambda x: x.get("timestamp", ""), reverse=True)
             except Exception:
-                continue
+                return []
 
-        return sorted(stories, key=lambda x: x.get("timestamp", ""), reverse=True)
+        return await _list(self.user_id)
+
+    async def get_public_templates(self) -> List[Dict[str, Any]]:
+        """获取公开的故事模版"""
+        @sync_to_async
+        def _list_templates():
+            templates = StoryTemplate.objects.filter(is_public=True).order_by('-play_count')
+            results = []
+            for t in templates:
+                results.append({
+                    "id": t.id,
+                    "title": t.title,
+                    "genre": t.genre,
+                    "description": t.description,
+                    "play_count": t.play_count,
+                    "author": t.created_by.username
+                })
+            return results
+        return await _list_templates()
+
+    async def create_story_from_template(self, template_id: int) -> StoryState:
+        """从模版创建新故事"""
+        @sync_to_async
+        def _create(tid, user_id_str):
+            try:
+                template = StoryTemplate.objects.get(id=tid)
+                uid = int(user_id_str.replace("user_", ""))
+                user = User.objects.get(id=uid)
+                
+                # 增加游玩计数
+                template.play_count += 1
+                template.save()
+                
+                setting_dict = template.source_data
+                
+                # 初始化 StoryState
+                state = StoryState()
+                state.genre = setting_dict["genre"]
+                state.setting = setting_dict["setting"]
+                state.protagonist = setting_dict["protagonist"]
+                
+                # 初始场景
+                initial_scene = {
+                    "scene_number": 0,
+                    "title": setting_dict["title"],
+                    "description": setting_dict["initial_scene"].get("description", ""),
+                    "environment": setting_dict["initial_scene"].get("environment", ""),
+                    "mood": setting_dict["initial_scene"].get("mood", ""),
+                    "timestamp": datetime.now().isoformat()
+                }
+                state.scenes.append(initial_scene)
+                
+                for npc_data in setting_dict.get("key_npcs", []):
+                    state.npcs[npc_data.get("name", "")] = npc_data
+                    
+                state.world_state = {
+                    "central_conflict": setting_dict.get("central_conflict", ""),
+                    "themes": setting_dict.get("potential_themes", []),
+                    "tension_level": 1
+                }
+                
+                # 创建 UserStory
+                us = UserStory.objects.create(
+                    user=user,
+                    template=template,
+                    current_state=state.to_dict(),
+                    is_active=True
+                )
+                state.story_id = str(us.id)
+                return state
+            except Exception as e:
+                raise e
+        
+        return await _create(template_id, self.user_id)
+
+    async def prefetch_scenes_for_choices(
+        self,
+        state: StoryState,
+        choices: List[Dict[str, Any]]
+    ) -> Dict[int, Dict[str, Any]]:
+        """
+        预生成每个选择对应的下一场景
+        
+        Args:
+            state: 当前故事状态
+            choices: 选择列表
+            
+        Returns:
+            {choice_id: scene_data} 字典
+        """
+        import asyncio
+        
+        async def generate_for_choice(choice):
+            # 模拟选择，生成对应场景
+            simulated_choice = {
+                "option_text": choice.get("text", ""),
+                "consequence": f"基于选择: {choice.get('text', '')[:50]}...",
+                "motivation": choice.get("motivation", "")
+            }
+            scene = await self.generate_next_scene(state, simulated_choice)
+            return (choice.get("id"), scene)
+        
+        # 并行生成所有选择的场景
+        tasks = [generate_for_choice(c) for c in choices]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        prefetched = {}
+        for result in results:
+            if isinstance(result, tuple):
+                choice_id, scene = result
+                prefetched[choice_id] = scene
+        
+        return prefetched
+
+    async def process_choice_quick(
+        self,
+        state: StoryState,
+        choice: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        快速处理选择 - 仅生成后果描述，不做深度分析
+        
+        Args:
+            state: 故事状态
+            choice: 选择数据
+            
+        Returns:
+            基本后果信息
+        """
+        # 生成简短的后果描述
+        prompt = f"""用户做出了以下选择，请生成简短的后果描述。
+
+## 选择
+{choice.get('text', '')}
+
+请返回 JSON（仅包含后果，不需要分析）：
+{{
+    "immediate_consequence": "后果描述（50-80字）",
+    "tension_change": "+1 或 -1 或 0"
+}}
+"""
+        response = await self.invoke_llm(prompt, call_type="story_choice_quick")
+        
+        try:
+            content = response.content
+            if "```json" in content:
+                content = content.split("```json")[1].split("```")[0].strip()
+            result = json.loads(content)
+        except (json.JSONDecodeError, KeyError, TypeError) as e:
+            logger.warning(f"Failed to parse choice response: {e}")
+            result = {"immediate_consequence": "你的选择产生了影响...", "tension_change": "0"}
+        
+        # 快速记录选择（无深度分析）
+        choice_record = {
+            "scene_number": state.current_scene,
+            "choice": choice,
+            "consequence": result.get("immediate_consequence", ""),
+            "analysis": {},  # 稍后后台填充
+            "timestamp": datetime.now().isoformat()
+        }
+        state.choices_made.append(choice_record)
+        
+        return result
+
+    async def process_choice_analysis_background(
+        self,
+        state: StoryState,
+        choice_index: int
+    ):
+        """
+        后台深度分析选择（更新已记录的选择）
+        
+        Args:
+            state: 故事状态
+            choice_index: 要分析的选择索引
+        """
+        if choice_index < 0 or choice_index >= len(state.choices_made):
+            return
+            
+        choice_record = state.choices_made[choice_index]
+        choice = choice_record.get("choice", {})
+        
+        prompt = f"""分析用户的选择，提取心理特征。
+
+## 选择
+{choice.get('text', '')}
+
+## 预设动机
+{choice.get('motivation', '')}
+
+## 预设后果
+{choice.get('potential_consequence', '')}
+
+## 心理维度
+{choice.get('psychological_dimension', '')}
+
+请结合上述**预设的动机和后果提示**，分析用户做出此选择的深层心理原因。
+
+请返回 JSON：
+{{
+    "psychological_analysis": {{
+        "trait_revealed": "揭示的特征",
+        "value_reflected": "反映的价值观",
+        "moral_stance": "道德立场",
+        "decision_style": "决策风格",
+        "confidence": 4
+    }}
+}}
+"""
+        response = await self.invoke_llm(prompt, call_type="story_choice_analysis")
+        
+        try:
+            content = response.content
+            if "```json" in content:
+                content = content.split("```json")[1].split("```")[0].strip()
+            result = json.loads(content)
+
+            # 更新选择记录
+            state.choices_made[choice_index]["analysis"] = result.get("psychological_analysis", {})
+
+            # 保存更新
+            await self.save_story(state)
+        except (json.JSONDecodeError, KeyError, TypeError, IndexError) as e:
+            logger.warning(f"Failed to parse/save choice analysis: {e}")
+

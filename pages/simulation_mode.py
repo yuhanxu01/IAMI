@@ -14,8 +14,8 @@ from datetime import datetime
 
 def render():
     """渲染模拟模式页面"""
-    st.markdown("# 💬 模拟模式")
-    st.markdown("AI 将以**你的思维模式**回答问题")
+    st.markdown("# ◇ 模拟模式")
+    st.markdown("AI 将以**您的思维模式**回答问题")
     st.markdown("---")
 
     # 检查代理
@@ -27,7 +27,7 @@ def render():
 
     # 设置区域
     with st.sidebar:
-        st.markdown("### ⚙️ 模拟设置")
+        st.markdown("### ◇ 模拟设置")
 
         use_latest_only = st.checkbox(
             "只使用最新记忆",
@@ -36,15 +36,15 @@ def render():
         )
 
         st.markdown("---")
-        st.markdown("### 💡 使用提示")
+        st.markdown("### ◈ 使用提示")
         st.info("""
-        - 问一些你可能被问到的问题
-        - 测试 AI 是否理解你的立场
-        - 看看 AI 能否用你的方式思考
+        - 问一些您可能被问到的问题
+        - 测试 AI 是否理解您的立场
+        - 看看 AI 能否用您的方式思考
         """)
 
     # 聊天区域
-    st.markdown("### 💬 对话")
+    st.markdown("### ◇ 对话")
 
     # 初始化聊天历史
     if "simulation_messages" not in st.session_state:
@@ -123,12 +123,12 @@ def render():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        if st.button("🗑️ 清除对话", use_container_width=True):
+        if st.button("清除对话", use_container_width=True):
             st.session_state.simulation_messages = []
             st.rerun()
 
     with col2:
-        if st.button("💾 导出对话", use_container_width=True):
+        if st.button("导出对话", use_container_width=True):
             if st.session_state.simulation_messages:
                 # 转换为文本
                 export_text = "# IAMI 模拟对话\n\n"
@@ -136,7 +136,7 @@ def render():
                 export_text += "---\n\n"
 
                 for msg in st.session_state.simulation_messages:
-                    role = "👤 用户" if msg["role"] == "user" else "🤖 AI (模拟你)"
+                    role = "◇ 用户" if msg["role"] == "user" else "◈ AI (模拟您)"
                     export_text += f"## {role}\n\n{msg['content']}\n\n"
 
                 st.download_button(
@@ -149,7 +149,7 @@ def render():
                 st.warning("没有对话可导出")
 
     with col3:
-        if st.button("📊 生成评估", use_container_width=True):
+        if st.button("生成评估", use_container_width=True):
             if st.session_state.simulation_messages:
                 st.info("此功能将在未来版本中提供：对模拟质量进行评估")
             else:
@@ -157,7 +157,7 @@ def render():
 
     # 测试建议
     st.markdown("---")
-    st.markdown("### 💡 测试建议")
+    st.markdown("### ◈ 测试建议")
 
     test_questions = [
         "你对人工智能的看法是什么？",
@@ -172,7 +172,7 @@ def render():
     for idx, question in enumerate(test_questions):
         col = cols[idx % 2]
         with col:
-            if st.button(f"📝 {question}", key=f"test_q_{idx}"):
+            if st.button(f"{question}", key=f"test_q_{idx}"):
                 st.session_state.test_question = question
                 # 触发问题输入
                 st.rerun()
